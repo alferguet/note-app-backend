@@ -1,0 +1,31 @@
+version: '3'
+services:
+  notes-backend:
+    restart: always
+    container_name: notes-app-backend
+    image: notes-app-backend:0.0.1
+    depends_on:
+      - notes-database
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+
+  notes-database:
+    restart: always
+    container_name: notes-database
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_PASSWORD}
+    volumes:
+      - notes_db:/var/lib/postgresql/data
+
+volumes:
+  notes_db:
