@@ -31,14 +31,14 @@ export class NotesController {
     return await this.notesService.findAll()
   }
 
-  @Get(':id')
-  async findOne(@Param('id') noteId: number): Promise<ReadNoteDto> {
-    return await this.notesService.findById(noteId)
-  }
-
   @Get('/favorites')
   async findFavorites(): Promise<ReadNoteDto[]> {
     return await this.notesService.findFavorites()
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') noteId: number): Promise<ReadNoteDto> {
+    return await this.notesService.findById(noteId)
   }
 
   @Put(':id/favorite')
