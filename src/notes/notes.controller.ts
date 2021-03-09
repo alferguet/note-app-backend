@@ -1,3 +1,4 @@
+import { Logger } from '../logger'
 import {
   Controller,
   Get,
@@ -21,6 +22,7 @@ import { NotesService } from './notes.service'
 @Controller('notes')
 @ApiTags('Notes')
 export class NotesController {
+  private readonly logger = new Logger('NotesController')
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
@@ -30,7 +32,7 @@ export class NotesController {
     try {
       return this.notesService.create(createNoteDto)
     } catch (err) {
-      console.log(`Failed to create a note: ${err.message}`)
+      this.logger.error(`Failed to create a note: ${err.message}`)
       throw new InternalServerErrorException('Failed to create the note')
     }
   }
@@ -54,19 +56,21 @@ export class NotesController {
   @Put(':id/favorite')
   @ApiNotFoundResponse({ description: 'Not found' })
   @ApiBadRequestResponse({ description: 'Already a favorite' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
   async setAsFavorite(@Param('id') id: number): Promise<ReadNoteDto> {
     const note = await this.notesService.findById(id)
     if (!note) return null
     if (note.favorite) {
-      const errMessage = 'Failed to set note as favorite'
-      console.log(errMessage)
+      const errMessage = `Note with id ${note.id} is already a favorite`
+      this.logger.error(errMessage)
       throw new BadRequestException(errMessage)
     }
     try {
       return await this.notesService.setAsFavorite(note)
     } catch (err) {
-      console.log('Failed to set note as favorite')
-      throw new InternalServerErrorException()
+      const message = `Failed to set note with id ${id} as favorite: ${err.message}`
+      this.logger.error(message)
+      throw new InternalServerErrorException(message)
     }
   }
 }

@@ -4,9 +4,12 @@ import * as helmet from 'helmet'
 import { ValidationPipe } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { NotFoundInterceptor } from './interceptors/not-found.interceptor'
+import { Logger } from './logger'
+
+const logger = new Logger('Main')
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, { logger })
   app.setGlobalPrefix('api/v1')
   app.useGlobalInterceptors(new NotFoundInterceptor())
   app.enableCors()
@@ -32,4 +35,4 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document)
   await app.listen(3000)
 }
-bootstrap().catch((err) => console.log(`Boostrap failed: ${err.message}`))
+bootstrap().catch((err) => logger.error(`Boostrap failed: ${err.message}`))
