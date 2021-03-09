@@ -31,7 +31,7 @@ $ npm run start:prod
 docker-compose --env-file .env.production up -d --build
 ```
 
-*Once deployed access [OpenAPI Docs](localhost:3000/api-docs) for API Rest documentation.*
+*Once deployed access [OpenAPI Docs](http://localhost:3000/api-docs) for API Rest documentation.*
 
 ## Test
 
