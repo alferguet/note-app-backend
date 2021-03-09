@@ -3,6 +3,7 @@ services:
   notes-backend:
     restart: always
     container_name: notes-app-backend
+    build: ./
     image: notes-app-backend:0.0.1
     depends_on:
       - notes-database
