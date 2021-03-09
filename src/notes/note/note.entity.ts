@@ -22,8 +22,8 @@ export class NoteEntity implements Note {
   favorite: boolean
 
   @CreateDateColumn()
-  createdAt: string
+  createdAt: Date
 
   @UpdateDateColumn()
-  updatedAt: string
+  updatedAt: Date
 }
