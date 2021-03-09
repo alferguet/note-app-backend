@@ -8,6 +8,8 @@ Simple note app to showcase NestJS skills.
 
 ```bash
 npm install
+echo 'DB_USERNAME=postgres\nDB_PASSWORD=djkJFS2374@jdk\nDB_HOST=notes-database\nDB_PORT=5432' > .env.production
+echo 'DB_USERNAME=postgres\nDB_PASSWORD=djkJFS2374@jdk\nDB_HOST=localhost\nDB_PORT=5432' > .env.development
 ```
 
 ## Running the app
@@ -22,6 +24,14 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+## Deployment
+
+```bash
+docker-compose --env-file .env.production up -d --build
+```
+
+*Once deployed access [OpenAPI Docs](localhost:3000/api-docs) for API Rest documentation.*
 
 ## Test
 
