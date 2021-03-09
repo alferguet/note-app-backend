@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import { NoteMockRepository } from './note-repository.mock'
+import { NoteMockRepository } from './note-mock.repository'
 import { CreateNoteDto } from './note/dto/create-note.dto'
 import { NoteEntity } from './note/note.entity'
 import { NotesService } from './notes.service'

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import { NoteMockRepository } from '../src/notes/note-repository.mock'
-import { NoteEntity } from '../src/notes/note/note.entity'
-import { NotesService } from '../src/notes/notes.service'
-import { NotesController } from '../src/notes/notes.controller'
+import { NoteMockRepository } from './note-mock.repository'
+import { NoteEntity } from './note/note.entity'
+import { NotesController } from './notes.controller'
+import { NotesService } from './notes.service'
 
 @Module({
   controllers: [NotesController],

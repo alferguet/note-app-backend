@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
 import { NotFoundInterceptor } from '../src/interceptors/not-found.interceptor'
 import { CreateNoteDto } from '../src/notes/note/dto/create-note.dto'
-import { NotesMockModule } from './notes.mock.module'
+import { NotesMockModule } from '../src/notes/notes-mock.module'
 
 describe('AppController (e2e)', () => {
   let app: INestApplication
