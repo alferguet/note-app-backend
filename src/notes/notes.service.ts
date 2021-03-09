@@ -23,10 +23,11 @@ export class NotesService {
     return await this.noteRepository.findOne({ id })
   }
 
-  async setAsFavorite(id: number): Promise<NoteEntity> {
-    const note = await this.findById(id)
-    if (!note) return null
-    if (note.favorite) throw new Error('Note is already a favorite')
+  async findFavorites(): Promise<NoteEntity[]> {
+    return await this.noteRepository.find({ where: { favorite: true } })
+  }
+
+  async setAsFavorite(note: NoteEntity): Promise<NoteEntity> {
     note.favorite = true
     return this.noteRepository.save(note)
   }

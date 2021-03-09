@@ -3,10 +3,12 @@ import { AppModule } from './app.module'
 import * as helmet from 'helmet'
 import { ValidationPipe } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { NotFoundInterceptor } from './interceptors/not-found.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.setGlobalPrefix('api/v1')
+  app.useGlobalInterceptors(new NotFoundInterceptor())
   app.enableCors()
   app.use(
     helmet({
