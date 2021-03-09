@@ -1,25 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication, ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
-import { NotesModule } from '../src/notes/notes.module'
 import { NotFoundInterceptor } from '../src/interceptors/not-found.interceptor'
-import { NoteEntity } from '../src/notes/note/note.entity'
-import { getRepositoryToken } from '@nestjs/typeorm'
-import { NoteMockRepository } from '../src/notes/note-repository.mock'
 import { CreateNoteDto } from '../src/notes/note/dto/create-note.dto'
+import { NotesMockModule } from './notes.mock.module'
 
 describe('AppController (e2e)', () => {
   let app: INestApplication
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: getRepositoryToken(NoteEntity),
-          useValue: new NoteMockRepository(),
-        },
-      ],
-      imports: [NotesModule],
+      imports: [NotesMockModule],
     }).compile()
 
     app = moduleFixture.createNestApplication()
@@ -29,7 +20,6 @@ describe('AppController (e2e)', () => {
         transform: true,
       }),
     )
-
     await app.init()
   })
 
@@ -64,13 +54,6 @@ describe('AppController (e2e)', () => {
       .expect(400)
   })
 
-  const firstNote = {
-    title: 'This is good',
-    message: 'This is too',
-    id: 1,
-    favorite: false,
-  }
-
   it('/notes (POST)(OK)', () => {
     const okayDto: CreateNoteDto = {
       title: 'This is good',
@@ -80,42 +63,62 @@ describe('AppController (e2e)', () => {
       .post('/notes')
       .send(okayDto)
       .expect(201)
-      .expect(firstNote)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('id', 1)
+      })
   })
 
   it('/notes (GET)(FIRST)', () => {
     return request(app.getHttpServer())
       .get('/notes')
       .expect(200)
-      .expect([firstNote])
+      .expect((res) => {
+        expect(res.body).toHaveLength(1)
+        expect(res.body[0]).toHaveProperty('id', 1)
+      })
   })
 
   it('/notes/:id (GET BY ID)(FIRST)', () => {
     return request(app.getHttpServer())
       .get('/notes/1')
       .expect(200)
-      .expect(firstNote)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('id', 1)
+      })
   })
 
-  const firstNoteFavorite = { ...firstNote, favorite: true }
   it('/notes/favorite/:id (PUT FAV BY ID)(FIRST)', () => {
     return request(app.getHttpServer())
-      .put('/notes/favorite/1')
+      .put('/notes/1/favorite')
       .expect(200)
-      .expect(firstNoteFavorite)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('favorite', true)
+      })
   })
 
-  it('/notes/favorite/:id (PUT FAV BY ID)(FIRST AGAIN)', () => {
-    return request(app.getHttpServer()).put('/notes/favorite/1').expect(400)
+  it('/notes/:id/favprite (PUT FAV BY ID)(FIRST AGAIN)', () => {
+    return request(app.getHttpServer()).put('/notes/1/favorite').expect(400)
   })
 
-  it('/notes/favorite/:id (PUT FAV BY ID)(SECOND NOT AVAIL)', () => {
-    return request(app.getHttpServer()).put('/notes/favorite/2').expect(404)
+  it('/notes/:id/favorite (PUT FAV BY ID)(SECOND NOT AVAIL)', () => {
+    return request(app.getHttpServer()).put('/notes/2/favorite').expect(404)
   })
 
-  it('/notes/favorite (GET FAV)(FIRST FAV)', () => {
+  it('/notes/favorites (GET FAV)(FIRST FAV)', () => {
+    request(app.getHttpServer())
+      .get('/notes')
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).toHaveLength(1)
+      })
+
     return request(app.getHttpServer())
-      .get('/notes/favorite')
-      .expect([firstNoteFavorite])
+      .get('/notes/favorites')
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).toHaveLength(1)
+        expect(res.body[0]).toHaveProperty('favorite', true)
+        expect(res.body[0]).toHaveProperty('id', 1)
+      })
   })
 })

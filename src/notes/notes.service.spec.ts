@@ -61,18 +61,8 @@ describe('NotesService', () => {
     const note = await service.findById(1)
     const favoriteNote = await service.setAsFavorite(note)
     expect(favoriteNote).toEqual(
-      expect.objectContaining({ ...note, favorite: true }),
+      expect.objectContaining({ ...validNoteDto, id: 1, favorite: true }),
     )
-  })
-
-  it('should throw as the note is already a favorite', async () => {
-    await service.create(validNoteDto)
-    const note = await service.findById(1)
-    const favoriteNote = await service.setAsFavorite(note)
-    expect(favoriteNote).toEqual(
-      expect.objectContaining({ ...note, favorite: true }),
-    )
-    expect(service.setAsFavorite(favoriteNote)).rejects.toThrow()
   })
 
   it('should retrieve all favorite notes when requested', async () => {

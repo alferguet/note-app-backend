@@ -1,29 +1,34 @@
-import { FindConditions } from "typeorm"
-import { CreateNoteDto } from "./note/dto/create-note.dto"
-import { NoteEntity } from "./note/note.entity"
+import { FindConditions, FindManyOptions } from 'typeorm'
+import { NoteEntity } from './note/note.entity'
 
 export class NoteMockRepository {
   private notes: NoteEntity[] = []
 
-  async find(): Promise<NoteEntity[]> {
+  async find(options: FindManyOptions<NoteEntity>): Promise<NoteEntity[]> {
+    const where = options?.where as FindConditions<NoteEntity>
+    if (where?.favorite) return this.notes.filter((note) => note.favorite)
     return this.notes
   }
+
   async findOne(params: FindConditions<NoteEntity>): Promise<NoteEntity> {
     return this.notes.find((note) => note.id === params.id)
   }
-  async findFavorites(): Promise<NoteEntity[]> {
-    return this.notes.filter((note) => note.favorite)
-  }
 
-  async save(note: CreateNoteDto): Promise<NoteEntity> {
+  async save(noteToSave: NoteEntity): Promise<NoteEntity> {
     const now = new Date()
-    this.notes.push({
-      id: this.notes.length + 1,
-      favorite: false,
-      createdAt: now,
+    const savedNote = {
+      ...noteToSave,
+      id: noteToSave.id || this.notes.length + 1,
+      favorite: noteToSave.favorite || false,
+      createdAt: noteToSave.createdAt || now,
       updatedAt: now,
-      ...note,
-    })
-    return this.notes[this.notes.length - 1]
+    }
+    const noteIndex = this.notes.findIndex((note) => note.id === savedNote.id)
+    if (noteIndex >= 0) {
+      this.notes[noteIndex] = savedNote
+    } else {
+      this.notes.push(savedNote)
+    }
+    return savedNote
   }
 }

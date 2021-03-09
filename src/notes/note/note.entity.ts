@@ -18,7 +18,7 @@ export class NoteEntity implements Note {
   @Column({ type: 'varchar', length: 200 })
   message: string
 
-  @Column({ type: 'bool' })
+  @Column({ type: 'bool', default: false })
   favorite: boolean
 
   @CreateDateColumn()

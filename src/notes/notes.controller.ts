@@ -8,15 +8,24 @@ import {
   InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common'
+import {
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+} from '@nestjs/swagger'
 import { CreateNoteDto } from './note/dto/create-note.dto'
 import { ReadNoteDto } from './note/dto/update-note.dto'
 import { NotesService } from './notes.service'
 
 @Controller('notes')
+@ApiTags('Notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
+  @ApiBadRequestResponse({ description: 'Failed DTO validation' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error' })
   create(@Body() createNoteDto: CreateNoteDto): Promise<ReadNoteDto> {
     try {
       return this.notesService.create(createNoteDto)
@@ -37,11 +46,14 @@ export class NotesController {
   }
 
   @Get(':id')
+  @ApiNotFoundResponse({ description: 'Not found' })
   async findOne(@Param('id') noteId: number): Promise<ReadNoteDto> {
     return await this.notesService.findById(noteId)
   }
 
   @Put(':id/favorite')
+  @ApiNotFoundResponse({ description: 'Not found' })
+  @ApiBadRequestResponse({ description: 'Already a favorite' })
   async setAsFavorite(@Param('id') id: number): Promise<ReadNoteDto> {
     const note = await this.notesService.findById(id)
     if (!note) return null
